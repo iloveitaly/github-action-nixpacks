@@ -4,7 +4,7 @@ set -e
 # Install Nixpacks if not present
 if ! command -v nixpacks &> /dev/null; then
     echo "Installing Nixpacks..."
-    curl -sSL https://get.nixpacks.com | sh
+    curl -sSL https://nixpacks.com/install.sh | bash
 fi
 
 # Construct the Nixpacks build command
