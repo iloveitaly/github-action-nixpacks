@@ -46,10 +46,12 @@ echo "Executing Nixpacks build command:"
 echo $BUILD_CMD
 eval $BUILD_CMD
 
-# Push the images
-for tag in "${TAGS[@]}"; do
-    echo "Pushing Docker image: $tag"
-    docker push $tag
-done
+# Conditionally push the images based on the 'push' input
+if [[ "$INPUT_PUSH" == "true" ]]; then
+    for tag in "${TAGS[@]}"; do
+        echo "Pushing Docker image: $tag"
+        docker push $tag
+    done
+fi
 
 echo "Nixpacks Build & Push completed successfully."

@@ -24,6 +24,10 @@ inputs:
   apt:
     description: "Provide additional apt packages to install in the environment"
     required: false
+  push:
+    description: "Boolean to determine if the built image should be pushed"
+    required: true
+    default: 'false'
 
 runs:
   using: 'composite'
