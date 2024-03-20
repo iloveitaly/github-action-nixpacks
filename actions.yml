@@ -18,6 +18,12 @@ inputs:
   context:
     description: "Build's context is the set of files located in the specified PATH or URL"
     required: true
+  pkgs:
+    description: "Provide additional nix packages to install in the environment"
+    required: false
+  apt:
+    description: "Provide additional apt packages to install in the environment"
+    required: false
 
 runs:
   using: 'composite'
