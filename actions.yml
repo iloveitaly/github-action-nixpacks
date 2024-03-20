@@ -1,0 +1,26 @@
+name: 'Nixpacks Build and Push Action'
+description: 'Build and push with Nixpacks'
+author: 'Your Name or Organization'
+branding:
+  icon: 'box'
+  color: 'green'
+
+inputs:
+  tags:
+    description: "List of tags to apply to the built image"
+    required: true
+  labels:
+    description: "List of metadata for an image"
+    required: false
+  platforms:
+    description: "List of target platforms for the build"
+    required: false
+  context:
+    description: "Build's context is the set of files located in the specified PATH or URL"
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - run: ./entrypoint.sh
+      shell: bash
