@@ -14,6 +14,3 @@ jobs:
         uses: iloveitaly/github-actions-metadata-sync@v1
         with:
           TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
-          # optional params, these are inferred from the repo type!
-          TYPE: npm
-          PATH: package.json
