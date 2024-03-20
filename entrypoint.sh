@@ -15,7 +15,7 @@ if [ -n "${INPUT_TAGS}" ]; then
     # Splitting tags and adding them to the build command
     IFS=',' read -ra TAGS <<< "$INPUT_TAGS"
     for tag in "${TAGS[@]}"; do
-        BUILD_CMD="$BUILD_CMD -t $tag"
+        BUILD_CMD="$BUILD_CMD --tag $tag"
     done
 fi
 
@@ -23,7 +23,7 @@ if [ -n "${INPUT_LABELS}" ]; then
     # Assuming INPUT_LABELS is a comma-separated list of labels
     IFS=',' read -ra LABELS <<< "$INPUT_LABELS"
     for label in "${LABELS[@]}"; do
-        BUILD_CMD="$BUILD_CMD -l $label"
+        BUILD_CMD="$BUILD_CMD --label $label"
     done
 fi
 
@@ -43,9 +43,9 @@ eval $BUILD_CMD
 # Assuming the Nixpacks build process handles tagging, no need for separate Docker push commands
 # However, if you need to push the images manually, you would uncomment and use the following:
 
-# for tag in "${TAGS[@]}"; do
-#     echo "Pushing Docker image: $tag"
-#     docker push $tag
-# done
+for tag in "${TAGS[@]}"; do
+    echo "Pushing Docker image: $tag"
+    docker push $tag
+done
 
 echo "Nixpacks Build & Push completed successfully."
