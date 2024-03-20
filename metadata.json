@@ -1,0 +1,5 @@
+{
+  "description": "Build and push images with nixpacks",
+  "homepage": "https://github.com/iloveitaly/github-action-nixpacks",
+  "keywords": ["nixpacks", "docker"]
+}
