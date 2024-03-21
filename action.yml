@@ -39,5 +39,8 @@ runs:
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
+
     - run: entrypoint.sh
       shell: bash
