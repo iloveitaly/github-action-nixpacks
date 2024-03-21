@@ -33,7 +33,6 @@ if [ -n "${INPUT_PLATFORMS}" ]; then
     done
 fi
 
-# Add the Nix and Apt packages if specified
 if [ -n "${INPUT_PKGS}" ]; then
     read -ra PKGS_ARR <<< "$(echo "$INPUT_PKGS" | tr ',\n' ' ')"
     BUILD_CMD="$BUILD_CMD --pkgs '${PKGS_ARR[*]}'"
@@ -42,6 +41,14 @@ fi
 if [ -n "${INPUT_APT}" ]; then
     read -ra APT_ARR <<< "$(echo "$INPUT_APT" | tr ',\n' ' ')"
     BUILD_CMD="$BUILD_CMD --apt '${APT_ARR[*]}'"
+fi
+
+# Include environment variables in the build command
+if [ -n "${INPUT_ENV}" ]; then
+    IFS=',' read -ra ENVS <<< "$INPUT_ENV"
+    for env_var in "${ENVS[@]}"; do
+        BUILD_CMD="$BUILD_CMD --env $env_var"
+    done
 fi
 
 # Execute the Nixpacks build command
