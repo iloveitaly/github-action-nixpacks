@@ -39,10 +39,14 @@ runs:
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
-    - run: env
-      shell: bash
-
-    - uses: mxschmitt/action-tmate@v3
-
     - run: entrypoint.sh
       shell: bash
+      env:
+        INPUT_TAGS: ${{ inputs.tags }}
+        INPUT_LABELS: ${{ inputs.labels }}
+        INPUT_PLATFORMS: ${{ inputs.platforms }}
+        INPUT_CONTEXT: ${{ inputs.context }}
+        INPUT_PKGS: ${{ inputs.pkgs }}
+        INPUT_APT: ${{ inputs.apt }}
+        INPUT_PUSH: ${{ inputs.push }}
+
