@@ -25,6 +25,9 @@ inputs:
   apt:
     description: "Provide additional apt packages to install in the environment"
     required: false
+  env:
+    description: "Provide additional environment variables to set"
+    required: false
   push:
     description: "Boolean to determine if the built image should be pushed"
     required: true
@@ -49,4 +52,5 @@ runs:
         INPUT_PKGS: ${{ inputs.pkgs }}
         INPUT_APT: ${{ inputs.apt }}
         INPUT_PUSH: ${{ inputs.push }}
+        INPUT_ENV: ${{ inputs.env }}
 
