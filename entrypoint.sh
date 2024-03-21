@@ -13,21 +13,21 @@ BUILD_CMD="nixpacks build $INPUT_CONTEXT"
 
 # Incorporate provided input parameters from actions.yml into the Nixpacks build command
 if [ -n "${INPUT_TAGS}" ]; then
-    IFS=', '$'\n' read -ra TAGS <<< "$INPUT_TAGS"
+    read -ra TAGS <<< "$(echo "$INPUT_TAGS" | tr ',\n' ' ')"
     for tag in "${TAGS[@]}"; do
         BUILD_CMD="$BUILD_CMD --tag $tag"
     done
 fi
 
 if [ -n "${INPUT_LABELS}" ]; then
-    IFS=', '$'\n' read -ra LABELS <<< "$INPUT_LABELS"
+    read -ra LABELS <<< "$(echo "$INPUT_LABELS" | tr ',\n' ' ')"
     for label in "${LABELS[@]}"; do
         BUILD_CMD="$BUILD_CMD --label $label"
     done
 fi
 
 if [ -n "${INPUT_PLATFORMS}" ]; then
-    IFS=', '$'\n' read -ra PLATFORMS <<< "$INPUT_PLATFORMS"
+    read -ra PLATFORMS <<< "$(echo "$INPUT_PLATFORMS" | tr ',\n' ' ')"
     for platform in "${PLATFORMS[@]}"; do
         BUILD_CMD="$BUILD_CMD --platform $platform"
     done
@@ -35,14 +35,12 @@ fi
 
 # Add the Nix and Apt packages if specified
 if [ -n "${INPUT_PKGS}" ]; then
-    # Using an array to avoid issues if there are spaces in the input
-    IFS=', '$'\n' read -ra PKGS_ARR <<< "$INPUT_PKGS"
+    read -ra PKGS_ARR <<< "$(echo "$INPUT_PKGS" | tr ',\n' ' ')"
     BUILD_CMD="$BUILD_CMD --pkgs '${PKGS_ARR[*]}'"
 fi
 
 if [ -n "${INPUT_APT}" ]; then
-    # Using an array to avoid issues if there are spaces in the input
-    IFS=', '$'\n' read -ra APT_ARR <<< "$INPUT_APT"
+    read -ra APT_ARR <<< "$(echo "$INPUT_APT" | tr ',\n' ' ')"
     BUILD_CMD="$BUILD_CMD --apt '${APT_ARR[*]}'"
 fi
 
