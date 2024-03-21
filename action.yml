@@ -39,7 +39,7 @@ runs:
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
-    - uses: fawazahmed0/action-debug@main
+    - uses: mxschmitt/action-tmate@v3
 
     - run: entrypoint.sh
       shell: bash
