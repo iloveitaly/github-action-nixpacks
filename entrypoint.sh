@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
 
+env
+
 # Install Nixpacks if not present
 if ! command -v nixpacks &> /dev/null; then
     echo "Installing Nixpacks..."
     curl -sSL https://nixpacks.com/install.sh | bash
 fi
 
-# Construct the Nixpacks build command
 BUILD_CMD="nixpacks build $INPUT_CONTEXT"
 
 # Incorporate provided input parameters from actions.yml into the Nixpacks build command
