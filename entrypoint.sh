@@ -13,21 +13,21 @@ BUILD_CMD="nixpacks build $INPUT_CONTEXT"
 
 # Incorporate provided input parameters from actions.yml into the Nixpacks build command
 if [ -n "${INPUT_TAGS}" ]; then
-    IFS=',' read -ra TAGS <<< "$INPUT_TAGS"
+    IFS=$', \n' read -ra TAGS <<< "$INPUT_TAGS"
     for tag in "${TAGS[@]}"; do
         BUILD_CMD="$BUILD_CMD --tag $tag"
     done
 fi
 
 if [ -n "${INPUT_LABELS}" ]; then
-    IFS=',' read -ra LABELS <<< "$INPUT_LABELS"
+    IFS=$', \n' read -ra LABELS <<< "$INPUT_LABELS"
     for label in "${LABELS[@]}"; do
         BUILD_CMD="$BUILD_CMD --label $label"
     done
 fi
 
 if [ -n "${INPUT_PLATFORMS}" ]; then
-    IFS=',' read -ra PLATFORMS <<< "$INPUT_PLATFORMS"
+    IFS=$', \n' read -ra PLATFORMS <<< "$INPUT_PLATFORMS"
     for platform in "${PLATFORMS[@]}"; do
         BUILD_CMD="$BUILD_CMD --platform $platform"
     done
