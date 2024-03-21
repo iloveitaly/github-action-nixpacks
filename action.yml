@@ -16,7 +16,7 @@ inputs:
     description: "List of target platforms for the build"
     required: false
   context:
-    description: "Build's context is the set of files located in the specified PATH or URL"
+    description: "Build's context is the set of files located in the specified PATH"
     required: true
     default: "."
   pkgs:
@@ -38,6 +38,9 @@ runs:
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    - run: env
+      shell: bash
 
     - uses: mxschmitt/action-tmate@v3
 
