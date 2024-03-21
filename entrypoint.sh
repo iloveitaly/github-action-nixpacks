@@ -1,7 +1,6 @@
 #!/bin/bash
-set -e
 
-env
+set -e
 
 # Install Nixpacks if not present
 if ! command -v nixpacks &> /dev/null; then
@@ -62,6 +61,8 @@ if [[ "$INPUT_PUSH" == "true" ]]; then
         echo "Pushing Docker image: $tag"
         docker push "$tag"
     done
+else
+    echo "Skipping Docker image push."
 fi
 
 echo "Nixpacks Build & Push completed successfully."
