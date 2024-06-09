@@ -2,7 +2,6 @@
 
 set -e
 
-# Install Nixpacks if not present
 if ! command -v nixpacks &> /dev/null; then
     echo "Installing Nixpacks..."
     curl -sSL https://nixpacks.com/install.sh | bash
@@ -17,6 +16,10 @@ if [ -n "${INPUT_TAGS}" ]; then
         BUILD_CMD="$BUILD_CMD --tag $tag"
     done
 fi
+
+
+BUILD_CMD="$BUILD_CMD --label org.opencontainers.image.source=$GITHUB_REPOSITORY"
+# TODO add the description label as well
 
 if [ -n "${INPUT_LABELS}" ]; then
     read -ra LABELS <<< "$(echo "$INPUT_LABELS" | tr ',\n' ' ')"
@@ -53,6 +56,7 @@ fi
 # Execute the Nixpacks build command
 echo "Executing Nixpacks build command:"
 echo "$BUILD_CMD"
+
 eval "$BUILD_CMD"
 
 # Conditionally push the images based on the 'push' input

@@ -53,4 +53,5 @@ runs:
         INPUT_APT: ${{ inputs.apt }}
         INPUT_PUSH: ${{ inputs.push }}
         INPUT_ENV: ${{ inputs.env }}
+        GITHUB_REPOSITORY: ${{ github.server_url }}/${{ github.repository }}
 
