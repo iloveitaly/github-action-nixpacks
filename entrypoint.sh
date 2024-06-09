@@ -12,25 +12,34 @@ BUILD_CMD="nixpacks build $INPUT_CONTEXT"
 # Incorporate provided input parameters from actions.yml into the Nixpacks build command
 if [ -n "${INPUT_TAGS}" ]; then
     read -ra TAGS <<< "$(echo "$INPUT_TAGS" | tr ',\n' ' ')"
-    for tag in "${TAGS[@]}"; do
-        BUILD_CMD="$BUILD_CMD --tag $tag"
-    done
 else
     # if not tags are provided, assume ghcr.io as the default registry
     echo "No tags provided. Defaulting to ghcr.io registry."
     BUILD_DATE_TIMESTAMP=$(date +%s)
-    BUILD_CMD="$BUILD_CMD --tag ghcr.io/$GITHUB_REPOSITORY:$GIT_SHA --tag ghcr.io/$GITHUB_REPOSITORY:latest --tag ghcr.io/$GITHUB_REPOSITORY:$BUILD_DATE_TIMESTAMP"
+    TAGS=("ghcr.io/$GITHUB_REPOSITORY:$GIT_SHA" "ghcr.io/$GITHUB_REPOSITORY:latest" "ghcr.io/$GITHUB_REPOSITORY:$BUILD_DATE_TIMESTAMP")
 fi
 
-BUILD_CMD="$BUILD_CMD --label org.opencontainers.image.source=$GITHUB_REPOSITORY_URL"
-# TODO add the description label as well
+for tag in "${TAGS[@]}"; do
+    BUILD_CMD="$BUILD_CMD --tag $tag"
+done
+
+
 
 if [ -n "${INPUT_LABELS}" ]; then
     read -ra LABELS <<< "$(echo "$INPUT_LABELS" | tr ',\n' ' ')"
-    for label in "${LABELS[@]}"; do
-        BUILD_CMD="$BUILD_CMD --label $label"
-    done
 fi
+
+LABELS+=("org.opencontainers.image.source=$GITHUB_REPOSITORY_URL")
+LABELS+=("org.opencontainers.image.revision=$GITHUB_SHA")
+LABELS+=("org.opencontainers.image.created=\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"")
+
+# lunchmoney/lunchmoney-assets/Dockerfile:13:7:      org.opencontainers.image.licenses="MIT" \
+# TODO add the description label as well
+# asdf-devcontainer/Dockerfile:9:7:LABEL org.opencontainers.image.authors="Michael Bianco <mike@mikebian.co>" \
+
+for label in "${LABELS[@]}"; do
+    BUILD_CMD="$BUILD_CMD --label $label"
+done
 
 if [ -n "${INPUT_PLATFORMS}" ]; then
     read -ra PLATFORMS <<< "$(echo "$INPUT_PLATFORMS" | tr ',\n' ' ')"
