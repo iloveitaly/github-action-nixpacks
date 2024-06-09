@@ -15,10 +15,14 @@ if [ -n "${INPUT_TAGS}" ]; then
     for tag in "${TAGS[@]}"; do
         BUILD_CMD="$BUILD_CMD --tag $tag"
     done
+else
+    # if not tags are provided, assume ghcr.io as the default registry
+    echo "No tags provided. Defaulting to ghcr.io registry."
+    BUILD_DATE_TIMESTAMP=$(date +%s)
+    BUILD_CMD="$BUILD_CMD --tag ghcr.io/$GITHUB_REPOSITORY:$GIT_SHA --tag ghcr.io/$GITHUB_REPOSITORY:latest --tag ghcr.io/$GITHUB_REPOSITORY:$BUILD_DATE_TIMESTAMP"
 fi
 
-
-BUILD_CMD="$BUILD_CMD --label org.opencontainers.image.source=$GITHUB_REPOSITORY"
+BUILD_CMD="$BUILD_CMD --label org.opencontainers.image.source=$GITHUB_REPOSITORY_URL"
 # TODO add the description label as well
 
 if [ -n "${INPUT_LABELS}" ]; then
