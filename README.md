@@ -36,6 +36,52 @@ To use this action in your workflow, add the following step:
 
 Ensure that your GitHub Actions runner has Docker installed and configured correctly, especially if you're pushing to a private registry.
 
+Here's a complete example of a workflow that uses this action:
+
+```yaml
+name: Build & Publish
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # really important for ensuring that the package inherits the permissions of the repo
+    # https://stackoverflow.com/questions/77092191/use-github-to-change-visibility-of-ghcr-io-package
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # create a unique tag for each build for debugging
+      - name: Set Docker tag
+        id: date
+        run: echo "DATE_STAMP=$(date +%s)" > "$GITHUB_ENV"
+
+      - name: Build and push Docker images
+        uses: iloveitaly/github-action-nixpacks@main
+        with:
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.DATE_STAMP }}
+            ${{ env.IMAGE_NAME }}:latest
+```
+
 ## Installation and Execution
 
 The action automatically installs Nixpacks if it's not already present in the environment. Then, it constructs and executes a Nixpacks build command using the provided inputs. After the build, it pushes the tagged image(s) to the Docker registry.
