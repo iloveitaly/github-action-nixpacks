@@ -8,7 +8,7 @@ branding:
 inputs:
   tags:
     description: "List of tags to apply to the built image"
-    required: true
+    required: false
   labels:
     description: "List of metadata for an image"
     required: false
@@ -30,7 +30,7 @@ inputs:
     required: false
   push:
     description: "Boolean to determine if the built image should be pushed"
-    required: true
+    required: false
     default: 'false'
 
 runs:
