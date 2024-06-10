@@ -1,6 +1,6 @@
-name: 'Nixpacks Build and Push Action'
-description: 'Build and push with Nixpacks'
-author: 'Your Name or Organization'
+name: 'Build Containers with Nixpacks and'
+description: 'Build a docker container with nixpacks on GitHub CI and push to a registry'
+author: 'Michael Bianco'
 branding:
   icon: 'box'
   color: 'green'
