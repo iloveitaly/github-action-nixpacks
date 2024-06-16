@@ -42,6 +42,10 @@ runs:
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
+    # TODO should detect if qemu is needed based on current vs target platform
+    - uses: docker/setup-qemu-action@v3
+      if: inputs.platforms != ''
+
     - run: entrypoint.sh
       shell: bash
       env:

@@ -59,9 +59,6 @@ if [ -n "${INPUT_ENV}" ]; then
     done
 fi
 
-echo "Executing Nixpacks build command:"
-echo "$BUILD_CMD"
-
 if [ -n "${INPUT_PLATFORMS}" ]; then
     read -ra PLATFORMS <<< "$(echo "$INPUT_PLATFORMS" | tr ',\n' ' ')"
 fi
@@ -78,6 +75,9 @@ if [ "${#PLATFORMS[@]}" -gt 1 ]; then
 elif [ -n "$PLATFORMS" ]; then
     BUILD_CMD="$BUILD_CMD --platform ${PLATFORMS[0]}"
 fi
+
+echo "Executing Nixpacks build command:"
+echo "$BUILD_CMD"
 
 eval "$BUILD_CMD"
 
