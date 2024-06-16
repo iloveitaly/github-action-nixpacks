@@ -75,7 +75,7 @@ if [ "${#PLATFORMS[@]}" -gt 1 ]; then
     echo "Multi platform builds not supported yet"
     exit 1
     # for platform in "${PLATFORMS[@]}"; do
-elif [ "${#PLATFORMS[@]}" -eq 1 ]; then
+elif [ -n "$PLATFORMS" ]; then
     BUILD_CMD="$BUILD_CMD --platform ${PLATFORMS[0]}"
 fi
 
