@@ -41,13 +41,6 @@ for label in "${LABELS[@]}"; do
     BUILD_CMD="$BUILD_CMD --label $label"
 done
 
-if [ -n "${INPUT_PLATFORMS}" ]; then
-    read -ra PLATFORMS <<< "$(echo "$INPUT_PLATFORMS" | tr ',\n' ' ')"
-    for platform in "${PLATFORMS[@]}"; do
-        BUILD_CMD="$BUILD_CMD --platform $platform"
-    done
-fi
-
 if [ -n "${INPUT_PKGS}" ]; then
     read -ra PKGS_ARR <<< "$(echo "$INPUT_PKGS" | tr ',\n' ' ')"
     BUILD_CMD="$BUILD_CMD --pkgs '${PKGS_ARR[*]}'"
@@ -66,9 +59,25 @@ if [ -n "${INPUT_ENV}" ]; then
     done
 fi
 
-# Execute the Nixpacks build command
 echo "Executing Nixpacks build command:"
 echo "$BUILD_CMD"
+
+if [ -n "${INPUT_PLATFORMS}" ]; then
+    read -ra PLATFORMS <<< "$(echo "$INPUT_PLATFORMS" | tr ',\n' ' ')"
+fi
+
+if [ "${#PLATFORMS[@]}" -gt 1 ] && [ "$INPUT_PUSH" != "true" ]; then
+    echo "Multi-platform builds *must* be pushed to a registry. Please set 'push: true' in your action configuration or do a single architecture build."
+    exit 1
+fi
+
+if [ "${#PLATFORMS[@]}" -gt 1 ]; then
+    echo "Multi platform builds not supported yet"
+    exit 1
+    # for platform in "${PLATFORMS[@]}"; do
+else
+    BUILD_CMD="$BUILD_CMD --platform ${PLATFORMS[0]}"
+fi
 
 eval "$BUILD_CMD"
 
