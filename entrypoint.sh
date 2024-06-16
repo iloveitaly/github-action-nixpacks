@@ -19,12 +19,6 @@ else
     TAGS=("ghcr.io/$GITHUB_REPOSITORY:$GIT_SHA" "ghcr.io/$GITHUB_REPOSITORY:latest" "ghcr.io/$GITHUB_REPOSITORY:$BUILD_DATE_TIMESTAMP")
 fi
 
-for tag in "${TAGS[@]}"; do
-    BUILD_CMD="$BUILD_CMD --tag $tag"
-done
-
-
-
 if [ -n "${INPUT_LABELS}" ]; then
     read -ra LABELS <<< "$(echo "$INPUT_LABELS" | tr ',\n' ' ')"
 fi
@@ -68,27 +62,40 @@ if [ "${#PLATFORMS[@]}" -gt 1 ] && [ "$INPUT_PUSH" != "true" ]; then
     exit 1
 fi
 
+function build_and_push() {
+  local platform=$1
+  local build_cmd=$BUILD_CMD
+
+  if [ -n "$platform" ]; then
+    build_cmd="$build_cmd --platform $platform"
+  fi
+
+  for tag in "${TAGS[@]}"; do
+    build_cmd="$build_cmd --tag $tag"
+  done
+
+  echo "Executing Nixpacks build command:"
+  echo "$build_cmd"
+
+  eval "$build_cmd"
+
+  # Conditionally push the images based on the 'push' input
+  if [[ "$INPUT_PUSH" == "true" ]]; then
+    for tag in "${TAGS[@]}"; do
+      echo "Pushing Docker image: $tag"
+      docker push "$tag"
+    done
+  else
+    echo "Skipping Docker image push."
+  fi
+}
+
 if [ "${#PLATFORMS[@]}" -gt 1 ]; then
     echo "Multi platform builds not supported yet"
     exit 1
     # for platform in "${PLATFORMS[@]}"; do
 elif [ -n "$PLATFORMS" ]; then
-    BUILD_CMD="$BUILD_CMD --platform ${PLATFORMS[0]}"
-fi
-
-echo "Executing Nixpacks build command:"
-echo "$BUILD_CMD"
-
-eval "$BUILD_CMD"
-
-# Conditionally push the images based on the 'push' input
-if [[ "$INPUT_PUSH" == "true" ]]; then
-    for tag in "${TAGS[@]}"; do
-        echo "Pushing Docker image: $tag"
-        docker push "$tag"
-    done
-else
-    echo "Skipping Docker image push."
+    build_and_push "$PLATFORMS"
 fi
 
 echo "Nixpacks Build & Push completed successfully."
