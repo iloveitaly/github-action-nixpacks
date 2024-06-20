@@ -92,7 +92,7 @@ function build_and_push() {
 function build_and_push_multiple_architectures() {
   for platform in "${PLATFORMS[@]}"; do
     local build_cmd=$BUILD_CMD
-    local temporary_image_name=${GITHUB_REPOSITORY}-local-build:$platform
+    local temporary_image_name=${GIT_SHA}-local-build:$platform
 
     build_cmd="$build_cmd --platform $platform"
     build_cmd="$build_cmd --tag $temporary_image_name"
