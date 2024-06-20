@@ -90,9 +90,14 @@ function build_and_push() {
 }
 
 function build_and_push_multiple_architectures() {
+  local manifest_list=()
+
   for platform in "${PLATFORMS[@]}"; do
     local build_cmd=$BUILD_CMD
-    local temporary_image_name=${GIT_SHA}-local-build:$platform
+    local temporary_image_name=${GITHUB_REPOSITORY}-local-build:$platform
+
+    # Replace '/' with '-'
+    temporary_image_name="${temporary_image_name//\//-}"
 
     build_cmd="$build_cmd --platform $platform"
     build_cmd="$build_cmd --tag $temporary_image_name"
@@ -101,15 +106,15 @@ function build_and_push_multiple_architectures() {
     echo "$build_cmd"
 
     eval "$build_cmd"
-  done
 
-  local manifest_list=$(for PLATFORM in "${PLATFORMS[@]}"; do echo "$IMAGE_NAME:temp-$PLATFORM"; done)
+    manifest_list+=("$temporary_image_name")
+  done
 
   # now, with all architectures built locally, we can construct a manifest and push to the registry
   for tag in "${TAGS[@]}"; do
     echo "Creating manifest and pushing for tag $tag..."
 
-    docker manifest create "$tag" "$manifest_list"
+    docker manifest create "$tag" "${manifest_list[@]}"
     docker manifest push "$tag"
   done
 }
