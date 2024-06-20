@@ -90,6 +90,8 @@ function build_and_push() {
 }
 
 function build_and_push_multiple_architectures() {
+  echo "Building for multiple architectures: ${PLATFORMS[*]}"
+
   local manifest_list=()
 
   for platform in "${PLATFORMS[@]}"; do
@@ -102,7 +104,7 @@ function build_and_push_multiple_architectures() {
     build_cmd="$build_cmd --platform $platform"
     build_cmd="$build_cmd --tag $temporary_image_name"
 
-    echo "Executing Nixpacks build command:"
+    echo "Executing Nixpacks build command for $platform:"
     echo "$build_cmd"
 
     eval "$build_cmd"
@@ -110,11 +112,15 @@ function build_and_push_multiple_architectures() {
     manifest_list+=("$temporary_image_name")
   done
 
+  echo "Multi-architecture build completed. Constructing manifest and pushing to registry..."
+
   # now, with all architectures built locally, we can construct a manifest and push to the registry
   for tag in "${TAGS[@]}"; do
-    echo "Creating manifest and pushing for tag $tag..."
 
-    docker manifest create "$tag" "${manifest_list[@]}"
+    local manifest_creation="docker manifest create $tag ${manifest_list[@]}"
+    echo "Creating manifest: $manifest_creation"
+    eval "$manifest_creation"
+
     docker manifest push "$tag"
   done
 }
