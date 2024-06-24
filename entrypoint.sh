@@ -143,16 +143,19 @@ function build_and_push_multiple_architectures() {
 
     eval "$build_cmd"
 
+    manifest_list+=("$architecture_image_name")
+  done
+
+  echo "All architectures built. Pushing images..."
+  for architecture_image_name in "${manifest_list[@]}"; do
     # if we don't push the images the multi-architecture manifest will not be created
     # best practice here seems to be to push `base:platform` images to the registry
     # when they are overwritten by the next architecture build, the previous manifest
     # will reference the sha of the image instead of the tag
     docker push "$architecture_image_name"
-
-    manifest_list+=("$architecture_image_name")
   done
 
-  echo "Multi-architecture build completed. Constructing manifest and pushing to registry..."
+  echo "Constructing manifest and pushing to registry..."
 
   # now, with all architectures built locally, we can construct a manifest and push to the registry
   for tag in "${TAGS[@]}"; do

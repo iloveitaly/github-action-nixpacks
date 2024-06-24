@@ -1,0 +1,5 @@
+- [ ] switch to newline only splitting
+- [ ] docker image for execution so we don't need mapping and installing nixpacks each time?
+- [ ] cron to automatically rebuild container each month for nixpacks upgrades?
+- [ ] only add labels if not already defined
+- [ ] support non-ghcr for multi arch builds

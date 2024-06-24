@@ -36,6 +36,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    # TODO can we remove this?
     - name: Set GitHub Path
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
       shell: bash

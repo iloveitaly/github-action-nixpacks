@@ -1,14 +1,15 @@
 # Nixpacks Build and Push Action
 
-This GitHub Action utilizes Nixpacks to build your application into a Docker image and then pushes the image to a Docker registry. Nixpacks generates an OCI-compliant container image from your application source without the need for a Dockerfile.
+This GitHub Action utilizes [Nixpacks](https://nixpacks.com) to build a Docker image for your application and (optionally) push the image to a Docker registry. Nixpacks generates an OCI-compliant container image from your application source without the need for a Dockerfile.
+
+It's very opinionated out the box (as software should be!) but allows you to customize much of the functionality if you want.
 
 ## Features
 
-- **Nixpacks Integration**: Leverages Nixpacks for building OCI-compliant Docker images from application source.
-- **Flexible Tagging**: Allows multiple tags to be specified for the built image.
-- **Metadata Addition**: Supports adding labels to the Docker image.
-- **Platform Specification**: Enables building for specific target platforms.
-- **Package Inclusion**: Offers the capability to include additional Nix and Apt packages in the build environment.
+- **Multi-architecture builds**: this is explained more in detail below.
+- **Default tags**: a unix timestamp, sha, and `latest` tag are automatically generated for each build.
+- **Default labels**: revision, author, build date, github repo, etc are all added automatically.
+- **Nixpacks options**: you add pass most (all?) nixpacks cli arguments to the action to customize your build as you would locally.
 
 ## Inputs
 
@@ -18,13 +19,24 @@ This GitHub Action utilizes Nixpacks to build your application into a Docker ima
 - `platforms`: An optional, comma-separated list of target platforms for the build.
 - `pkgs`: Optional additional Nix packages to install in the environment.
 - `apt`: Optional additional Apt packages to install in the environment.
+- `push`: A boolean flag to indicate whether to push the built image to the registry. Default is `false`. Required for multi-architecture builds.
+- `env`: Optional environment variables to set during the build.
 
 ## Usage
+
+[Here's an example of this workflow in a live project:](https://github.com/iloveitaly/github-overlord/blob/master/.github/workflows/build_and_publish.yml)
+
+```yaml
+  - name: Build and push Docker images
+    uses: iloveitaly/github-action-nixpacks@main
+    with:
+      push: true
+```
 
 To use this action in your workflow, add the following step:
 
 ```yaml
-- uses: your-repo/nixpacks-build-push-action@main
+- uses: iloveitaly/github-action-nixpacks@main
   with:
     context: './path-to-app'
     tags: 'latest,stable'
@@ -82,16 +94,14 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest
 ```
 
-## Installation and Execution
+### Multi-architecture builds
 
-The action automatically installs Nixpacks if it's not already present in the environment. Then, it constructs and executes a Nixpacks build command using the provided inputs. After the build, it pushes the tagged image(s) to the Docker registry.
+These are tricky and not supported by nixpacks by default. This action makes it easy to create multi-architecture builds with nixpacks.
 
-### Note:
+<!-- TODO add blog post when complete -->
 
-- The `tags` input is required to identify the image(s) in the registry uniquely.
-- If `labels` or `platforms` are specified, they are added to the build command to include in the Docker image.
-- Additional Nix or Apt packages can be specified through `pkgs` and `apt` inputs to customize the build environment.
+Some things to keep in mind:
 
-## Conclusion
-
-This GitHub Action simplifies the process of building and deploying containerized applications by leveraging the power of Nixpacks, making it easier to integrate into CI/CD pipelines without the need for Dockerfiles.
+* `push` is required when building for multiple architectures.
+* For each platform, an auto-generated tag is generated and pushed.
+* There are some [TODOs](/TODO) that I won't get to until I need them.
