@@ -35,6 +35,11 @@ repository_author() {
   echo "$owner_info"
 }
 
+repository_license() {
+  local repo=$1
+  gh api /repos/iloveitaly/dotfiles/license 2>/dev/null | jq -r '.license.key // ""'
+}
+
 BUILD_CMD="nixpacks build $INPUT_CONTEXT"
 GHCR_IMAGE_NAME="ghcr.io/$GITHUB_REPOSITORY"
 
@@ -62,9 +67,12 @@ if [ -n "$REPO_AUTHOR" ]; then
   LABELS+=("org.opencontainers.image.authors=\"$REPO_AUTHOR\"")
 fi
 
-# TODO can we extract the license definition from the github repo?
-# lunchmoney/lunchmoney-assets/Dockerfile:13:7:      org.opencontainers.image.licenses="MIT" \
-# TODO add the description label as well
+REPO_LICENSE=$(repository_license "$GITHUB_REPOSITORY")
+if [ -n "$REPO_LICENSE" ]; then
+  LABELS+=("org.opencontainers.image.licenses=\"$REPO_LICENSE\"")
+fi
+
+# TODO add the description label as well? Does this add any value?
 
 for label in "${LABELS[@]}"; do
   BUILD_CMD="$BUILD_CMD --label $label"
