@@ -58,7 +58,10 @@ runs:
         INPUT_PUSH: ${{ inputs.push }}
         INPUT_ENV: ${{ inputs.env }}
 
+        # raw SHA of the commit which triggered the workflow
         GIT_SHA: ${{ github.sha }}
+        # username/repo
         GITHUB_REPOSITORY: ${{ github.repository }}
+        # github.com/username/repo
         GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}
 

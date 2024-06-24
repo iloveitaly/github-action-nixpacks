@@ -7,7 +7,36 @@ if ! command -v nixpacks &>/dev/null; then
   curl -sSL https://nixpacks.com/install.sh | bash
 fi
 
+repository_author() {
+  local repo=$1
+  local owner_login owner_name owner_email owner_info
+
+  if [ -z "$repo" ]; then
+    echo "Error: Repository not specified."
+    return 1
+  fi
+
+  # Fetch the owner's login (username)
+  owner_login=$(gh repo view "$repo" --json owner --jq '.owner.login' | tr -d '[:space:]')
+
+  # Fetch the owner's name, remove trailing and leading whitespace
+  owner_name=$(gh api "users/$owner_login" --jq '.name' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+  # Attempt to fetch the owner's publicly available email
+  owner_email=$(gh api "users/$owner_login" --jq '.email' | tr -d '[:space:]')
+
+  # Check if an email was fetched; if not, use just the name
+  if [ -z "$owner_email" ] || [ "$owner_email" = "null" ]; then
+    owner_info="$owner_name"
+  else
+    owner_info="$owner_name <$owner_email>"
+  fi
+
+  echo "$owner_info"
+}
+
 BUILD_CMD="nixpacks build $INPUT_CONTEXT"
+GHCR_IMAGE_NAME="ghcr.io/$GITHUB_REPOSITORY"
 
 # Incorporate provided input parameters from actions.yml into the Nixpacks build command
 if [ -n "${INPUT_TAGS}" ]; then
@@ -16,20 +45,24 @@ else
   # if not tags are provided, assume ghcr.io as the default registry
   echo "No tags provided. Defaulting to ghcr.io registry."
   BUILD_DATE_TIMESTAMP=$(date +%s)
-  TAGS=("ghcr.io/$GITHUB_REPOSITORY:$GIT_SHA" "ghcr.io/$GITHUB_REPOSITORY:latest" "ghcr.io/$GITHUB_REPOSITORY:$BUILD_DATE_TIMESTAMP")
+  TAGS=("$GHCR_IMAGE_NAME:$GIT_SHA" "$GHCR_IMAGE_NAME:latest" "$GHCR_IMAGE_NAME:$BUILD_DATE_TIMESTAMP")
 fi
 
 if [ -n "${INPUT_LABELS}" ]; then
   read -ra LABELS <<<"$(echo "$INPUT_LABELS" | tr ',\n' ' ')"
 fi
 
+# TODO should check if these labels are already defined
 LABELS+=("org.opencontainers.image.source=$GITHUB_REPOSITORY_URL")
 LABELS+=("org.opencontainers.image.revision=$GITHUB_SHA")
 LABELS+=("org.opencontainers.image.created=\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"")
 
+REPO_AUTHOR=$(repository_author "$GITHUB_REPOSITORY")
+LABELS+=("org.opencontainers.image.authors=\"$REPO_AUTHOR\"")
+
+# TODO can we extract the license definition from the github repo?
 # lunchmoney/lunchmoney-assets/Dockerfile:13:7:      org.opencontainers.image.licenses="MIT" \
 # TODO add the description label as well
-# asdf-devcontainer/Dockerfile:9:7:LABEL org.opencontainers.image.authors="Michael Bianco <mike@mikebian.co>" \
 
 for label in "${LABELS[@]}"; do
   BUILD_CMD="$BUILD_CMD --label $label"
@@ -96,27 +129,31 @@ function build_and_push_multiple_architectures() {
 
   for platform in "${PLATFORMS[@]}"; do
     local build_cmd=$BUILD_CMD
-    local temporary_image_name=${GITHUB_REPOSITORY}-local-build:$platform
-
     # Replace '/' with '-'
-    temporary_image_name="${temporary_image_name//\//-}"
+    local normalized_platform=${platform//\//-}
+    local architecture_image_name=${GHCR_IMAGE_NAME}:$normalized_platform
 
     build_cmd="$build_cmd --platform $platform"
-    build_cmd="$build_cmd --tag $temporary_image_name"
+    build_cmd="$build_cmd --tag $architecture_image_name"
 
     echo "Executing Nixpacks build command for $platform:"
     echo "$build_cmd"
 
     eval "$build_cmd"
 
-    manifest_list+=("$temporary_image_name")
+    # if we don't push the images the multi-architecture manifest will not be created
+    # best practice here seems to be to push `base:platform` images to the registry
+    # when they are overwritten by the next architecture build, the previous manifest
+    # will reference the sha of the image instead of the tag
+    docker push "$architecture_image_name"
+
+    manifest_list+=("$architecture_image_name")
   done
 
   echo "Multi-architecture build completed. Constructing manifest and pushing to registry..."
 
   # now, with all architectures built locally, we can construct a manifest and push to the registry
   for tag in "${TAGS[@]}"; do
-
     local manifest_creation="docker manifest create $tag ${manifest_list[@]}"
     echo "Creating manifest: $manifest_creation"
     eval "$manifest_creation"
