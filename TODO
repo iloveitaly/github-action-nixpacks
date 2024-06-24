@@ -3,3 +3,4 @@
 - [ ] cron to automatically rebuild container each month for nixpacks upgrades?
 - [ ] only add labels if not already defined
 - [ ] support non-ghcr for multi arch builds
+- [ ] can we push and build in parallel to optimize gh actions billing time?

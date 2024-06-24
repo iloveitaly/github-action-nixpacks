@@ -33,22 +33,18 @@ It's very opinionated out the box (as software should be!) but allows you to cus
       push: true
 ```
 
-To use this action in your workflow, add the following step:
+Multi-architecture builds are easy:
 
 ```yaml
-- uses: iloveitaly/github-action-nixpacks@main
+- name: Build and push Docker images
+  uses: iloveitaly/github-action-nixpacks@main
   with:
-    context: './path-to-app'
-    tags: 'latest,stable'
-    labels: 'version=1.0,framework=express'
-    platforms: 'linux/amd64,linux/arm64'
-    pkgs: 'nodejs,npm'
-    apt: 'curl,git'
+    platforms: "linux/amd64,linux/arm64"
+    push: true
 ```
 
-Ensure that your GitHub Actions runner has Docker installed and configured correctly, especially if you're pushing to a private registry.
-
-Here's a complete example of a workflow that uses this action:
+Ensure that your GitHub Actions runner has Docker installed and configured correctly, especially if you're pushing to a private registry. Here's a full example which also
+shows how to override the default tags:
 
 ```yaml
 name: Build & Publish
@@ -65,10 +61,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    # really important for ensuring that the package inherits the permissions of the repo
-    # https://stackoverflow.com/questions/77092191/use-github-to-change-visibility-of-ghcr-io-package
-    permissions: write-all
 
     steps:
       - uses: actions/checkout@v4
@@ -90,8 +82,8 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.DATE_STAMP }}
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:custom-${{ env.DATE_STAMP }}
+            ${{ env.IMAGE_NAME }}:awesome-latest
 ```
 
 ### Multi-architecture builds
