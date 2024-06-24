@@ -64,4 +64,6 @@ runs:
         GITHUB_REPOSITORY: ${{ github.repository }}
         # github.com/username/repo
         GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}
+        # for author extraction
+        GH_TOKEN: ${{ github.token }}
 
