@@ -58,7 +58,9 @@ LABELS+=("org.opencontainers.image.revision=$GITHUB_SHA")
 LABELS+=("org.opencontainers.image.created=\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"")
 
 REPO_AUTHOR=$(repository_author "$GITHUB_REPOSITORY")
-LABELS+=("org.opencontainers.image.authors=\"$REPO_AUTHOR\"")
+if [ -n "$REPO_AUTHOR" ]; then
+  LABELS+=("org.opencontainers.image.authors=\"$REPO_AUTHOR\"")
+fi
 
 # TODO can we extract the license definition from the github repo?
 # lunchmoney/lunchmoney-assets/Dockerfile:13:7:      org.opencontainers.image.licenses="MIT" \
