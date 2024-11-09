@@ -184,7 +184,7 @@ function build_and_push_multiple_architectures() {
 
 if [ "${#PLATFORMS[@]}" -gt 1 ]; then
   build_and_push_multiple_architectures
-elif [ -n "$PLATFORMS" ]; then
+else 
   build_and_push
 fi
 
