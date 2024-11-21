@@ -21,6 +21,7 @@ It's very opinionated out the box (as software should be!) but allows you to cus
 - `apt`: Optional additional Apt packages to install in the environment.
 - `push`: A boolean flag to indicate whether to push the built image to the registry. Default is `false`. Required for multi-architecture builds.
 - `cache`: A boolean flag to indicate whether to use the build cache. Default is `false`.
+- `cache_tag`: A single tag to use for the cache image. Required if `cache` is `true`.
 - `env`: Optional environment variables to set during the build.
 
 ## Usage

@@ -64,8 +64,7 @@ if [ -n "${INPUT_LABELS}" ]; then
 fi
 
 if [[ "$INPUT_CACHE" == "true" ]]; then
-  GHCR_IMAGE_NAME_LOWER=$(echo "$GHCR_IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
-  BUILD_CMD="$BUILD_CMD --inline-cache --cache-from $GHCR_IMAGE_NAME_LOWER:latest"
+  BUILD_CMD="$BUILD_CMD --inline-cache --cache-from $INPUT_CACHE_TAG"
 fi
 
 # TODO should check if these labels are already defined
