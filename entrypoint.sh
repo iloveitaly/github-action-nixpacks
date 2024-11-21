@@ -63,6 +63,10 @@ if [ -n "${INPUT_LABELS}" ]; then
   read -ra LABELS <<<"$(echo "$INPUT_LABELS" | tr ',\n' ' ')"
 fi
 
+if [[ "$INPUT_CACHE" == "true" ]]; then
+  BUILD_CMD="$BUILD_CMD --inline-cache --cache-from $GHCR_IMAGE_NAME:latest"
+fi
+
 # TODO should check if these labels are already defined
 LABELS+=("org.opencontainers.image.source=$GITHUB_REPOSITORY_URL")
 LABELS+=("org.opencontainers.image.revision=$GITHUB_SHA")
