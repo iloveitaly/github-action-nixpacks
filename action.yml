@@ -37,7 +37,7 @@ inputs:
     required: false
     default: 'false'
   cache_tag:
-    description: "Image to use for the cache image. Defaults to `ghcr.io/org/app:latest` where org/app is the repository the workflow runs into."
+    description: "Image to use for the cache image. Defaults to `ghcr.io/org/app:latest` where org/app is the repository the workflow runs into. (NOTE: Provide a lowercase name, even if the repo or tbe org contain uppercase characters)"
     required: false
 
 runs:
