@@ -37,7 +37,7 @@ inputs:
     required: false
     default: 'false'
   cache_tag:
-    description: "Tag to use for the cache image, required if cache is true"
+    description: "Image to use for the cache image. Defaults to `ghcr.io/org/app:latest` where org/app is the repository the workflow runs into."
     required: false
 
 runs:
