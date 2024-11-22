@@ -20,9 +20,13 @@ It's very opinionated out the box (as software should be!) but allows you to cus
 - `pkgs`: Optional additional Nix packages to install in the environment.
 - `apt`: Optional additional Apt packages to install in the environment.
 - `push`: A boolean flag to indicate whether to push the built image to the registry. Default is `false`. Required for multi-architecture builds.
-- `cache`: A boolean flag to indicate whether to use the build cache. Default is `false`. 
+- `cache`: A boolean flag to indicate whether to use the build cache. 
+  Cache speeds up the CI by reusing docker layers from previous builds.
+  Default is `false`.
   (NOTE: The cache is shared between all builds in the repository. Some cache metadata will be inlined in the final image.)
+  See the [Nixpacks documentation](https://nixpacks.com/docs/configuration/caching) for more information.
 - `cache_tag`: A single tag to use for the cache image. Required if `cache` is `true`.
+  Defaults to `ghcr.io/org/app:latest` where `org/app` is the repository the workflow runs into.
 - `env`: Optional environment variables to set during the build.
 
 ## Usage

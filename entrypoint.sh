@@ -64,6 +64,9 @@ if [ -n "${INPUT_LABELS}" ]; then
 fi
 
 if [[ "$INPUT_CACHE" == "true" ]]; then
+  if [ -z "$INPUT_CACHE_TAG" ]; then
+    INPUT_CACHE_TAG=$(echo "$GHCR_IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+  fi
   BUILD_CMD="$BUILD_CMD --inline-cache --cache-from $INPUT_CACHE_TAG"
 fi
 
