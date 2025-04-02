@@ -104,9 +104,11 @@ fi
 
 # Include environment variables in the build command
 if [ -n "${INPUT_ENV}" ]; then
-  IFS=',' read -ra ENVS <<<"$INPUT_ENV"
+  readarray -t ENVS <<<"$INPUT_ENV"
   for env_var in "${ENVS[@]}"; do
-    BUILD_CMD="$BUILD_CMD --env $env_var"
+    if [ -n "${env_var}" ]; then
+      BUILD_CMD="$BUILD_CMD --env $env_var"
+    fi
   done
 fi
 

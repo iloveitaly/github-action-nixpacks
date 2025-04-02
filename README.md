@@ -91,6 +91,9 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:custom-${{ env.DATE_STAMP }}
             ${{ env.IMAGE_NAME }}:awesome-latest
+          env: |
+            MY_ENV_1: value1
+            MY_ENV_2: value2
 ```
 
 ### Multi-architecture builds
