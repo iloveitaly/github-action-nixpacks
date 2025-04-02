@@ -1,4 +1,4 @@
-name: 'Build Containers with Nixpacks and'
+name: 'Build Image with Nixpacks and Push to Registry'
 description: 'Build a docker container with nixpacks on GitHub CI and push to a registry'
 author: 'Michael Bianco'
 branding:
