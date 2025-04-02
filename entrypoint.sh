@@ -37,7 +37,7 @@ repository_author() {
 
 repository_license() {
   local repo=$1
-  gh api /repos/iloveitaly/dotfiles/license 2>/dev/null | jq -r '.license.key // ""'
+  gh api /repos/$repo/license 2>/dev/null | jq -r '.license.key // ""'
 }
 
 BUILD_CMD="nixpacks build $INPUT_CONTEXT"
